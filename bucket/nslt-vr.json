@@ -22,7 +22,7 @@
     "uninstaller": {
         "script": [
             "# On update the new version's installer simply installs over the old one; only a real uninstall removes the mod.",
-            "if ($cmd -eq 'uninstall') {",
+            "if (($subCommand -eq 'uninstall') -or ($cmd -eq 'uninstall')) {",
             "    $gd = $env:NSLTVR_GAMEDIR",
             "    if ($gd) { & \"$dir\\uninstall.ps1\" -GameDir $gd } else { & \"$dir\\uninstall.ps1\" }",
             "}"

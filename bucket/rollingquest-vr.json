@@ -49,7 +49,7 @@
     "uninstaller": {
         "script": [
             "# On update the new version simply installs over the old one; only a real uninstall removes the mod.",
-            "if ($cmd -eq 'uninstall') {",
+            "if (($subCommand -eq 'uninstall') -or ($cmd -eq 'uninstall')) {",
             "    $remember = \"$persist_dir\\gamedir.txt\"",
             "    $gd = if ($env:ROLLINGQUEST_DIR) { $env:ROLLINGQUEST_DIR } elseif (Test-Path $remember) { (Get-Content $remember -Raw).Trim() } else { $null }",
             "    if ($gd -and (Test-Path \"$gd\\RollingQuest.exe\")) {",
