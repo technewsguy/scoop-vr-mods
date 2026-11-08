@@ -39,7 +39,7 @@
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
             "Set-Content $remember $gd",
             "# 2. Copy the mod (BepInEx + plugin) into the game folder.",
-            "robocopy $dir $gd /E /NFL /NDL /NJH /NJS /NP /XF manifest.json install.json 'Add to Steam.bat' | Out-Null",
+            "robocopy $dir $gd /E /NFL /NDL /NJH /NJS /NP /XF manifest.json install.json scoop-manifest.json scoop-install.json 'Add to Steam.bat' | Out-Null",
             "if ($LASTEXITCODE -ge 8) { throw \"Copying into $gd failed (robocopy $LASTEXITCODE).\" }",
             "$global:LASTEXITCODE = 0",
             "# 3. Start menu helper: adds the Steam / SteamVR entry with artwork.",
