@@ -1,0 +1,88 @@
+{
+    "version": "1.0.0",
+    "description": "VR mod for Rolling Quest (itch.io): play it in a SteamVR headset, behind the ball or as a tabletop diorama.",
+    "homepage": "https://github.com/technewsguy/RollingQuest-VR",
+    "license": "MIT",
+    "notes": [
+        "Rolling Quest VR is installed into your Rolling Quest folder (found automatically, or picked by you).",
+        "Next: run 'Rolling Quest VR - Add to Steam' from the Start menu. It adds 'Rolling Quest VR' to your Steam and SteamVR libraries",
+        "with artwork plus a desktop shortcut (Steam closes and restarts). The first start of the game takes a minute or two.",
+        "Game moved? Set the ROLLINGQUEST_DIR environment variable to its folder and install again."
+    ],
+    "url": "https://github.com/technewsguy/RollingQuest-VR/releases/download/v1.0.0/RollingQuest-VR-v1.0.0.zip",
+    "hash": "df5466c41cbe50aba071edad8179e934c07f843e88df60ffc49f3345ba7cac6e",
+    "installer": {
+        "script": [
+            "# 1. Find the game: ROLLINGQUEST_DIR, the folder used last time, a search of the usual places, or ask.",
+            "$gd = $env:ROLLINGQUEST_DIR",
+            "$remember = \"$persist_dir\\gamedir.txt\"",
+            "if (-not $gd -and (Test-Path $remember)) { $gd = (Get-Content $remember -Raw).Trim() }",
+            "if ($gd -and -not (Test-Path \"$gd\\RollingQuest.exe\")) { $gd = $null }",
+            "if (-not $gd) {",
+            "    $bases = @(\"$env:APPDATA\\itch\\apps\", \"$env:USERPROFILE\\Games\", \"$env:USERPROFILE\\Downloads\", \"$env:USERPROFILE\\Desktop\", \"$env:USERPROFILE\\Documents\")",
+            "    foreach ($d in (Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -ne $null })) {",
+            "        $bases += @(\"$($d.Root)Games\", \"$($d.Root)Program Files\", \"$($d.Root)Program Files (x86)\", \"$($d.Root)itch\", \"$($d.Root)\")",
+            "    }",
+            "    foreach ($b in $bases) {",
+            "        if (-not (Test-Path $b)) { continue }",
+            "        $hit = Get-ChildItem $b -Filter RollingQuest.exe -Recurse -Depth 2 -File -ErrorAction SilentlyContinue | Select-Object -First 1",
+            "        if ($hit) { $gd = $hit.DirectoryName; break }",
+            "    }",
+            "}",
+            "if (-not $gd) {",
+            "    $pick = (New-Object -ComObject Shell.Application).BrowseForFolder(0, 'Rolling Quest VR: select your Rolling Quest folder (the one with RollingQuest.exe)', 0x51, 17)",
+            "    if ($pick -and (Test-Path \"$($pick.Self.Path)\\RollingQuest.exe\")) { $gd = $pick.Self.Path }",
+            "}",
+            "if (-not $gd) { throw 'Rolling Quest not found. Set the ROLLINGQUEST_DIR environment variable to the folder with RollingQuest.exe and install again.' }",
+            "if (Get-Process RollingQuest -ErrorAction SilentlyContinue) { throw 'Close Rolling Quest first, then install again.' }",
+            "Write-Host \"Rolling Quest: $gd\"",
+            "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            "Set-Content $remember $gd",
+            "# 2. Copy the mod (BepInEx + plugin) into the game folder.",
+            "robocopy $dir $gd /E /NFL /NDL /NJH /NJS /NP /XF manifest.json install.json 'Add to Steam.bat' | Out-Null",
+            "if ($LASTEXITCODE -ge 8) { throw \"Copying into $gd failed (robocopy $LASTEXITCODE).\" }",
+            "$global:LASTEXITCODE = 0",
+            "# 3. Start menu helper: adds the Steam / SteamVR entry with artwork.",
+            "Set-Content \"$dir\\Add to Steam.bat\" -Encoding ASCII -Value @('@echo off', \"powershell -NoProfile -ExecutionPolicy Bypass -File \"\"$gd\\BepInEx\\plugins\\RollingQuestVR\\add-to-steam.ps1\"\"\", 'pause')"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "# On update the new version simply installs over the old one; only a real uninstall removes the mod.",
+            "if ($cmd -eq 'uninstall') {",
+            "    $remember = \"$persist_dir\\gamedir.txt\"",
+            "    $gd = if ($env:ROLLINGQUEST_DIR) { $env:ROLLINGQUEST_DIR } elseif (Test-Path $remember) { (Get-Content $remember -Raw).Trim() } else { $null }",
+            "    if ($gd -and (Test-Path \"$gd\\RollingQuest.exe\")) {",
+            "        if (Get-Process RollingQuest -ErrorAction SilentlyContinue) { throw 'Close Rolling Quest first, then uninstall again.' }",
+            "        $pd = \"$gd\\BepInEx\\plugins\\RollingQuestVR\"",
+            "        if (Test-Path \"$pd\\steam_gameid.txt\") {",
+            "            $id = ([uint64](Get-Content \"$pd\\steam_gameid.txt\")) -shr 32",
+            "            $steam = (Get-ItemProperty HKCU:\\Software\\Valve\\Steam -ErrorAction SilentlyContinue).SteamPath",
+            "            if ($steam) { Get-ChildItem \"$steam\\userdata\\*\\config\\grid\\$id*\" -ErrorAction SilentlyContinue | Remove-Item -Force }",
+            "        }",
+            "        Remove-Item (Join-Path ([Environment]::GetFolderPath('Desktop')) 'Rolling Quest VR.lnk') -ErrorAction SilentlyContinue",
+            "        Remove-Item $pd -Recurse -Force -ErrorAction SilentlyContinue",
+            "        foreach ($f in 'Rolling Quest VR - Add to Steam.bat', 'Rolling Quest VR - Uninstall.bat', 'Rolling Quest VR - README.txt') { Remove-Item \"$gd\\$f\" -ErrorAction SilentlyContinue }",
+            "        # The mod loader goes too, unless other BepInEx mods still use it.",
+            "        $others = Get-ChildItem \"$gd\\BepInEx\\plugins\" -Force -ErrorAction SilentlyContinue",
+            "        if (-not $others) {",
+            "            foreach ($f in 'BepInEx', 'dotnet', 'winhttp.dll', 'doorstop_config.ini', '.doorstop_version', 'changelog.txt') { Remove-Item \"$gd\\$f\" -Recurse -Force -ErrorAction SilentlyContinue }",
+            "        } else { Write-Host 'Other BepInEx mods found: BepInEx was left in place.' }",
+            "        Write-Host \"Removed Rolling Quest VR from $gd. Remove its entry from Steam by hand: right-click it > Manage > Remove non-Steam game.\"",
+            "    }",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Add to Steam.bat",
+            "Rolling Quest VR - Add to Steam"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/technewsguy/RollingQuest-VR"
+    },
+    "autoupdate": {
+        "url": "https://github.com/technewsguy/RollingQuest-VR/releases/download/v$version/RollingQuest-VR-v$version.zip"
+    }
+}

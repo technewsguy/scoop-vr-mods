@@ -1,0 +1,44 @@
+{
+    "version": "1.0.1",
+    "description": "VR mod for New Super Lucky's Tale (Steam): play it in a SteamVR headset with motion controllers.",
+    "homepage": "https://github.com/technewsguy/NSLT-VR",
+    "license": "MIT",
+    "notes": [
+        "NSLT-VR is installed into your New Super Lucky's Tale folder (found through Steam).",
+        "Play with the 'New Super Lucky's Tale VR' shortcut on your desktop / Start menu.",
+        "Optional: 'NSLT-VR - Add to Steam' in the Start menu adds it to your Steam and SteamVR libraries with artwork (closes and restarts Steam).",
+        "Game in an unusual place? Set the NSLTVR_GAMEDIR environment variable to its folder and install again."
+    ],
+    "url": "https://github.com/technewsguy/NSLT-VR/releases/download/v1.0.1/NSLT-VR-v1.0.1.zip",
+    "hash": "7305350ad4d4df6a2b2ef126c2d9e840be577b56d8a0f0dcfecf387d044a6eeb",
+    "extract_dir": "NSLT-VR-v1.0.1",
+    "installer": {
+        "script": [
+            "$gd = $env:NSLTVR_GAMEDIR",
+            "if ($gd) { & \"$dir\\install.ps1\" -GameDir $gd } else { & \"$dir\\install.ps1\" }",
+            "Set-Content \"$dir\\Add to Steam.bat\" -Encoding ASCII -Value @('@echo off', 'powershell -NoProfile -ExecutionPolicy Bypass -File \"%~dp0add-steam-vr-shortcut.ps1\"', 'pause')"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "# On update the new version's installer simply installs over the old one; only a real uninstall removes the mod.",
+            "if ($cmd -eq 'uninstall') {",
+            "    $gd = $env:NSLTVR_GAMEDIR",
+            "    if ($gd) { & \"$dir\\uninstall.ps1\" -GameDir $gd } else { & \"$dir\\uninstall.ps1\" }",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Add to Steam.bat",
+            "NSLT-VR - Add to Steam"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/technewsguy/NSLT-VR"
+    },
+    "autoupdate": {
+        "url": "https://github.com/technewsguy/NSLT-VR/releases/download/v$version/NSLT-VR-v$version.zip",
+        "extract_dir": "NSLT-VR-v$version"
+    }
+}

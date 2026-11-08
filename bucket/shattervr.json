@@ -1,0 +1,51 @@
+{
+    "version": "0.2.0",
+    "description": "Unofficial PC runtime that plays the Smash Hit Gear VR build in a PC VR headset (OpenXR) or flat. Bring your own APK.",
+    "homepage": "https://github.com/technewsguy/ShatterVR-Runtime",
+    "license": "MIT",
+    "notes": [
+        "ShatterVR contains no game. Copy your own Smash Hit Gear VR APK to:",
+        "    $dir\\game.apk",
+        "It is kept when ShatterVR is updated or uninstalled (a copy is stored in $persist_dir).",
+        "Then start ShatterVR from the Start menu (start your VR software first to play in the headset)."
+    ],
+    "url": "https://github.com/technewsguy/ShatterVR-Runtime/releases/download/v0.2.0/ShatterVR-v0.2.0-windows-x64.zip",
+    "hash": "e1838da432c261b91f84c727644c99206152a635f7f4c77174c327246f9dfa13",
+    "extract_dir": "ShatterVR",
+    "pre_install": [
+        "# Bring back the APK from earlier installs (kept in the persist folder).",
+        "$apk = \"$persist_dir\\game.apk\"",
+        "if (Test-Path $apk) {",
+        "    try { New-Item -ItemType HardLink -Path \"$dir\\game.apk\" -Target $apk -ErrorAction Stop | Out-Null }",
+        "    catch { Copy-Item $apk \"$dir\\game.apk\" }",
+        "}"
+    ],
+    "post_install": [
+        "if (-not (Test-Path \"$dir\\game.apk\")) { Write-Host \"Copy your own Smash Hit Gear VR APK to $dir\\game.apk before playing.\" -ForegroundColor Yellow }"
+    ],
+    "uninstaller": {
+        "script": [
+            "# Keep the APK (it is the user's own file) for the next version or a reinstall.",
+            "$apk = \"$dir\\game.apk\"",
+            "if (Test-Path $apk) {",
+            "    New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            "    $kept = \"$persist_dir\\game.apk\"",
+            "    $a = Get-Item $apk",
+            "    $same = (Test-Path $kept) -and ((Get-Item $kept).Length -eq $a.Length) -and ((Get-Item $kept).LastWriteTimeUtc -eq $a.LastWriteTimeUtc)",
+            "    if (-not $same) { Copy-Item $apk $kept -Force }",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "ShatterVR.exe",
+            "ShatterVR"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/technewsguy/ShatterVR-Runtime"
+    },
+    "autoupdate": {
+        "url": "https://github.com/technewsguy/ShatterVR-Runtime/releases/download/v$version/ShatterVR-v$version-windows-x64.zip"
+    }
+}
