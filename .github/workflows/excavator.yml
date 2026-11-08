@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Excavator
-        uses: ScoopInstaller/GithubActions@v1
+        uses: ScoopInstaller/GithubActions@main
         if: github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
