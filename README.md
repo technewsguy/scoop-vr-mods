@@ -8,7 +8,7 @@ Install and update technewsguy's VR projects with [Scoop](https://scoop.sh) or [
 | `rollingquest-vr` | [Rolling Quest VR](https://github.com/technewsguy/RollingQuest-VR): VR mod for **Rolling Quest** (itch.io) |
 | `shmcd-vr` | [SHMCD-VR](https://github.com/technewsguy/SHMCD-VR): VR mod for **SUPERHOT: MIND CONTROL DELETE** (Steam) |
 | `fez-vr` | [FEZ-VR](https://github.com/technewsguy/FEZ-VR): VR mod for **FEZ** (Steam), the game as a 3D diorama |
-| `shattervr` | [ShatterVR Runtime](https://github.com/technewsguy/ShatterVR-Runtime): plays the **Smash Hit** Gear VR build on PC VR (bring your own APK) |
+| `smashhit-vr` | [SmashHit-VR](https://github.com/technewsguy/SmashHit-VR): VR mod for **Smash Hit**, plays the Gear VR build on PC VR (bring your own APK) |
 
 New releases of each project show up here automatically within a few hours.
 
@@ -16,7 +16,7 @@ New releases of each project show up here automatically within a few hours.
 
 1. **Settings → Package managers → Scoop.** If Scoop isn't installed yet, UniGetUI offers to install it.
 2. Under **Buckets**, add a bucket named `vrmods` with the URL `https://github.com/technewsguy/scoop-vr-mods`.
-3. Search for `nslt-vr`, `rollingquest-vr`, `shmcd-vr`, `fez-vr` or `shattervr` and install. Updates and uninstalls then work like any other package.
+3. Search for `nslt-vr`, `rollingquest-vr`, `shmcd-vr`, `fez-vr` or `smashhit-vr` and install. Updates and uninstalls then work like any other package.
 
 ## Command line
 
@@ -26,7 +26,7 @@ scoop install vrmods/nslt-vr
 scoop install vrmods/rollingquest-vr
 scoop install vrmods/shmcd-vr
 scoop install vrmods/fez-vr
-scoop install vrmods/shattervr
+scoop install vrmods/smashhit-vr
 ```
 
 ## What each package does
@@ -54,10 +54,12 @@ scoop install vrmods/shattervr
 - The first install adds **FEZ VR** to Steam and SteamVR with FEZ's artwork, plus desktop / Start menu shortcuts. Steam closes and restarts once; updates don't restart it.
 - Play **FEZ VR**; regular FEZ stays flat. Game somewhere unusual? Set `FEZVR_GAMEDIR` to its folder.
 
-**shattervr**
-- Installs ShatterVR with a Start menu shortcut.
+**smashhit-vr**
+- Installs SmashHit-VR with **Smash Hit VR** and **Smash Hit VR - Add to Steam** in the Start menu.
 - Copy your own Smash Hit Gear VR APK to the install folder as `game.apk`. Scoop shows the path after installing.
-- The APK is kept when ShatterVR updates or is uninstalled.
+- **Smash Hit VR - Add to Steam** adds **Smash Hit VR** to Steam/SteamVR, with artwork made from your APK (frames of the game with its own logo). Steam closes and restarts while it runs.
+- The APK is kept when SmashHit-VR updates or is uninstalled.
+- Had the old `shattervr` package (now deprecated)? `scoop uninstall shattervr`, then `scoop install vrmods/smashhit-vr`: your APK and progress carry over.
 
 **Updating and uninstalling:** updating the mods replaces only the mod files. Uninstalling removes them from the game folder again. A Steam entry added with "Add to Steam" is removed in Steam: right-click it > *Manage* > *Remove non-Steam game*.
 

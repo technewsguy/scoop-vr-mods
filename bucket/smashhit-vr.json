@@ -1,0 +1,56 @@
+{
+    "version": "0.3.0",
+    "description": "VR mod for Smash Hit: plays the Gear VR build in a PC VR headset (OpenXR / SteamVR) or flat. Bring your own APK.",
+    "homepage": "https://github.com/technewsguy/SmashHit-VR",
+    "license": "MIT",
+    "notes": [
+        "SmashHit-VR contains no game. Copy your own Smash Hit Gear VR APK to:",
+        "    $dir\\game.apk",
+        "It is kept when SmashHit-VR is updated or uninstalled (a copy is stored in $persist_dir).",
+        "Then run 'Smash Hit VR - Add to Steam' from the Start menu to add 'Smash Hit VR' to Steam and SteamVR, with artwork made from your APK (closes and restarts Steam).",
+        "Or start 'Smash Hit VR' from the Start menu (start your VR software first to play in the headset)."
+    ],
+    "url": "https://github.com/technewsguy/SmashHit-VR/releases/download/v0.3.0/SmashHit-VR-v0.3.0-windows-x64.zip",
+    "hash": "7e6ce66bf84a6754bebc17c14a3c5a476ca00c3385dcab98100309a885886347",
+    "extract_dir": "SmashHit-VR",
+    "pre_install": [
+        "# Bring back the APK from earlier installs (kept in the persist folder), or from the old 'shattervr' package.",
+        "$apk = @(\"$persist_dir\\game.apk\", \"$(Split-Path $persist_dir)\\shattervr\\game.apk\") | Where-Object { Test-Path $_ } | Select-Object -First 1",
+        "if ($apk) {",
+        "    try { New-Item -ItemType HardLink -Path \"$dir\\game.apk\" -Target $apk -ErrorAction Stop | Out-Null }",
+        "    catch { Copy-Item $apk \"$dir\\game.apk\" }",
+        "}"
+    ],
+    "post_install": [
+        "if (-not (Test-Path \"$dir\\game.apk\")) { Write-Host \"Copy your own Smash Hit Gear VR APK to $dir\\game.apk, then run 'Smash Hit VR - Add to Steam' from the Start menu.\" -ForegroundColor Yellow }"
+    ],
+    "uninstaller": {
+        "script": [
+            "# Keep the APK (it is the user's own file) for the next version or a reinstall.",
+            "$apk = \"$dir\\game.apk\"",
+            "if (Test-Path $apk) {",
+            "    New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            "    $kept = \"$persist_dir\\game.apk\"",
+            "    $a = Get-Item $apk",
+            "    $same = (Test-Path $kept) -and ((Get-Item $kept).Length -eq $a.Length) -and ((Get-Item $kept).LastWriteTimeUtc -eq $a.LastWriteTimeUtc)",
+            "    if (-not $same) { Copy-Item $apk $kept -Force }",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "SmashHit-VR.exe",
+            "Smash Hit VR"
+        ],
+        [
+            "Add to Steam.bat",
+            "Smash Hit VR - Add to Steam"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/technewsguy/SmashHit-VR"
+    },
+    "autoupdate": {
+        "url": "https://github.com/technewsguy/SmashHit-VR/releases/download/v$version/SmashHit-VR-v$version-windows-x64.zip"
+    }
+}
