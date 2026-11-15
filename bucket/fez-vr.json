@@ -1,0 +1,38 @@
+{
+    "version": "0.1.0",
+    "description": "VR mod for FEZ (Steam): the game as a 3D diorama in a SteamVR headset, with motion controllers.",
+    "homepage": "https://github.com/technewsguy/FEZ-VR",
+    "license": "MIT",
+    "notes": [
+        "FEZ-VR is installed next to FEZ.exe in your FEZ folder (found through Steam). FEZ's own files are not changed.",
+        "The first install adds 'FEZ VR' to your Steam and SteamVR libraries with FEZ's artwork, plus desktop / Start menu shortcuts (Steam closes and restarts once).",
+        "Play 'FEZ VR' from Steam, SteamVR or the shortcut. Regular FEZ stays flat.",
+        "Game in an unusual place? Set the FEZVR_GAMEDIR environment variable to its folder and install again."
+    ],
+    "url": "https://github.com/technewsguy/FEZ-VR/releases/download/v0.1.0/FEZ-VR-v0.1.0.zip",
+    "hash": "c6d0c98c6092b02151d4cf0083f85f33b68bba96d1d2a35313d04a1500f57e21",
+    "installer": {
+        "script": [
+            "# Updates only refresh the mod and its launcher; Steam is restarted only when the FEZ VR entry is first added.",
+            "$gd = $env:FEZVR_GAMEDIR",
+            "if ($gd) { & \"$dir\\install.ps1\" -GameDir $gd } else { & \"$dir\\install.ps1\" }"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "# On update the new version installs over the old one; only a real uninstall removes the mod.",
+            "if (($subCommand -eq 'uninstall') -or ($cmd -eq 'uninstall')) {",
+            "    $gd = $env:FEZVR_GAMEDIR",
+            "    if ($gd) { & \"$dir\\install.ps1\" -Uninstall -GameDir $gd } else { & \"$dir\\install.ps1\" -Uninstall }",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/technewsguy/FEZ-VR/releases",
+        "jsonpath": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/technewsguy/FEZ-VR/releases/download/v$version/FEZ-VR-v$version.zip"
+    }
+}
