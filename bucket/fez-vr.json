@@ -1,29 +1,34 @@
 {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "VR mod for FEZ (Steam): the game as a 3D diorama in a SteamVR headset, with motion controllers.",
     "homepage": "https://github.com/technewsguy/FEZ-VR",
     "license": "MIT",
     "notes": [
         "FEZ-VR is installed next to FEZ.exe in your FEZ folder (found through Steam). FEZ's own files are not changed.",
-        "The first install adds 'FEZ VR' to your Steam and SteamVR libraries with FEZ's artwork, plus desktop / Start menu shortcuts (Steam closes and restarts once).",
-        "Play 'FEZ VR' from Steam, SteamVR or the shortcut. Regular FEZ stays flat.",
-        "Game in an unusual place? Set the FEZVR_GAMEDIR environment variable to its folder and install again."
+        "Play from Steam's normal 'FEZ' entry: it starts in VR, and is listed in SteamVR's VR library tab after Steam next restarts.",
+        "Upgrading from 0.1.0: remove the old 'FEZ VR' entry from your Steam library (right-click > Manage > Remove non-Steam game).",
+        "Game in an unusual place? Set the FEZVR_GAMEDIR environment variable to its folder and install again.",
+        "Install log: %TEMP%\\fezvr-setup.log"
     ],
-    "url": "https://github.com/technewsguy/FEZ-VR/releases/download/v0.1.0/FEZ-VR-v0.1.0.zip",
-    "hash": "c6d0c98c6092b02151d4cf0083f85f33b68bba96d1d2a35313d04a1500f57e21",
+    "url": "https://github.com/technewsguy/FEZ-VR/releases/download/v0.2.0/FEZ-VR-v0.2.0.zip",
+    "hash": "e3a3510a0115e4844c27e05ce407e7e8c8aadecf3aa0e4a3f38c260615d59886",
     "installer": {
         "script": [
-            "# Updates only refresh the mod and its launcher; Steam is restarted only when the FEZ VR entry is first added.",
-            "$gd = $env:FEZVR_GAMEDIR",
-            "if ($gd) { & \"$dir\\install.ps1\" -GameDir $gd } else { & \"$dir\\install.ps1\" }"
+            "$a = @('/S')",
+            "if ($env:FEZVR_GAMEDIR) { $a += \"/GAMEDIR=`\"$env:FEZVR_GAMEDIR`\"\" }",
+            "$p = Start-Process \"$dir\\FEZ-VR-Setup.exe\" -ArgumentList $a -Wait -PassThru",
+            "Get-Content \"$env:TEMP\\fezvr-setup.log\" -ErrorAction SilentlyContinue | Write-Host",
+            "if ($p.ExitCode -ne 0) { throw 'FEZ-VR setup failed (see the log above).' }"
         ]
     },
     "uninstaller": {
         "script": [
-            "# On update the new version installs over the old one; only a real uninstall removes the mod.",
+            "# On update the new version's installer simply installs over the old one; only a real uninstall removes the mod.",
             "if (($subCommand -eq 'uninstall') -or ($cmd -eq 'uninstall')) {",
-            "    $gd = $env:FEZVR_GAMEDIR",
-            "    if ($gd) { & \"$dir\\install.ps1\" -Uninstall -GameDir $gd } else { & \"$dir\\install.ps1\" -Uninstall }",
+            "    $a = @('/S', '/UNINSTALL')",
+            "    if ($env:FEZVR_GAMEDIR) { $a += \"/GAMEDIR=`\"$env:FEZVR_GAMEDIR`\"\" }",
+            "    $p = Start-Process \"$dir\\FEZ-VR-Setup.exe\" -ArgumentList $a -Wait -PassThru",
+            "    Get-Content \"$env:TEMP\\fezvr-setup.log\" -ErrorAction SilentlyContinue | Write-Host",
             "}"
         ]
     },
