@@ -1,52 +1,37 @@
 {
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "VR mod for SUPERHOT: MIND CONTROL DELETE (Steam): play it in a SteamVR headset with motion controllers, hands and grab-and-throw.",
     "homepage": "https://github.com/technewsguy/SHMCD-VR",
     "license": "MIT",
-    "suggest": {
-        "Python": "main/python"
-    },
     "notes": [
         "SHMCD-VR is installed into your SUPERHOT: MIND CONTROL DELETE folder (found through Steam), with BepInEx 5 (x86).",
-        "Needs Python 3 once, to switch VR on in the game data (the UnityPy package is installed with pip). Originals are kept as *.orig.",
-        "Start SteamVR, then the game. Optional: 'SHMCD-VR - Add to Steam' in the Start menu adds a 'SUPERHOT: MIND CONTROL DELETE VR' entry to Steam and SteamVR with artwork (closes and restarts Steam).",
-        "Game in an unusual place? Set the SHMCDVR_GAMEDIR environment variable to its folder and install again."
+        "Play from Steam's normal entry for the game: it starts in VR, straight into the game, and is listed in SteamVR's VR tab after Steam next restarts.",
+        "Upgrading from 0.1: Python is no longer needed. Remove the old 'SUPERHOT: MIND CONTROL DELETE VR' entry from Steam if you added it (right-click > Manage > Remove non-Steam game).",
+        "Game in an unusual place? Set the SHMCDVR_GAMEDIR environment variable to its folder and install again.",
+        "Install log: %TEMP%\\shmcdvr-setup.log"
     ],
-    "url": "https://github.com/technewsguy/SHMCD-VR/releases/download/v0.1.1/SHMCD-VR-v0.1.1.zip",
-    "hash": "d7cd908bd02706fc900b752c9d80a547aeb527122e3b521214e4181ccbe768a6",
+    "url": "https://github.com/technewsguy/SHMCD-VR/releases/download/v0.2.0/SHMCD-VR-v0.2.0.zip",
+    "hash": "d0753c4983a454e3715de815b0d05be9b563b5ef214b6e6dea8582930d46cbd4",
     "installer": {
         "script": [
-            "# 1. Find the game: SHMCDVR_GAMEDIR, or the Steam libraries.",
-            "$gd = $env:SHMCDVR_GAMEDIR",
-            "if (-not $gd) {",
-            "    $steam = (Get-ItemProperty 'HKCU:\\Software\\Valve\\Steam' -ErrorAction SilentlyContinue).SteamPath",
-            "    $libs = @($steam)",
-            "    $vdf = \"$steam\\steamapps\\libraryfolders.vdf\"",
-            "    if ($steam -and (Test-Path $vdf)) { $libs += (Select-String -Path $vdf -Pattern '\"path\"\\s+\"([^\"]+)\"').Matches | ForEach-Object { $_.Groups[1].Value -replace '\\\\\\\\', '\\' } }",
-            "    foreach ($l in $libs) { if ($l -and (Test-Path \"$l\\steamapps\\common\\SUPERHOTMCD\\SHMCD.exe\")) { $gd = \"$l\\steamapps\\common\\SUPERHOTMCD\"; break } }",
-            "}",
-            "if (-not $gd) { throw 'SUPERHOT: MIND CONTROL DELETE not found. Set the SHMCDVR_GAMEDIR environment variable to the folder with SHMCD.exe and install again.' }",
-            "# 2. Install (BepInEx, mod, VR switch).",
-            "& \"$dir\\install.ps1\" -GameDir $gd -Yes",
-            "# 3. Start menu helper: adds the Steam / SteamVR entry with artwork.",
-            "Set-Content \"$dir\\Add to Steam.bat\" -Encoding ASCII -Value @('@echo off', \"powershell -NoProfile -ExecutionPolicy Bypass -File \"\"%~dp0steam-entry\\add-steam-vr-shortcut.ps1\"\" -GameDir \"\"$gd\"\" -BuildDir \"\"%~dp0steam-entry\"\"\", 'pause')"
+            "$a = @('/S')",
+            "if ($env:SHMCDVR_GAMEDIR) { $a += \"/GAMEDIR=`\"$env:SHMCDVR_GAMEDIR`\"\" }",
+            "$p = Start-Process \"$dir\\SHMCD-VR-Setup.exe\" -ArgumentList $a -Wait -PassThru",
+            "Get-Content \"$env:TEMP\\shmcdvr-setup.log\" -ErrorAction SilentlyContinue | Write-Host",
+            "if ($p.ExitCode -ne 0) { throw 'SHMCD-VR setup failed (see the log above).' }"
         ]
     },
     "uninstaller": {
         "script": [
-            "# On update the new version installs over the old one; only a real uninstall removes the mod.",
+            "# On update the new version's installer simply installs over the old one; only a real uninstall removes the mod.",
             "if (($subCommand -eq 'uninstall') -or ($cmd -eq 'uninstall')) {",
-            "    $gd = $env:SHMCDVR_GAMEDIR",
-            "    if ($gd) { & \"$dir\\install.ps1\" -Uninstall -GameDir $gd } else { & \"$dir\\install.ps1\" -Uninstall }",
+            "    $a = @('/S', '/UNINSTALL')",
+            "    if ($env:SHMCDVR_GAMEDIR) { $a += \"/GAMEDIR=`\"$env:SHMCDVR_GAMEDIR`\"\" }",
+            "    $p = Start-Process \"$dir\\SHMCD-VR-Setup.exe\" -ArgumentList $a -Wait -PassThru",
+            "    Get-Content \"$env:TEMP\\shmcdvr-setup.log\" -ErrorAction SilentlyContinue | Write-Host",
             "}"
         ]
     },
-    "shortcuts": [
-        [
-            "Add to Steam.bat",
-            "SHMCD-VR - Add to Steam"
-        ]
-    ],
     "checkver": {
         "url": "https://api.github.com/repos/technewsguy/SHMCD-VR/releases",
         "jsonpath": "$[0].tag_name",
