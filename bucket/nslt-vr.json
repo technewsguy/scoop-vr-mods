@@ -1,5 +1,5 @@
 {
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "VR mod for New Super Lucky's Tale (Steam): play it in a SteamVR headset with motion controllers.",
     "homepage": "https://github.com/technewsguy/NSLT-VR",
     "license": "MIT",
@@ -9,9 +9,9 @@
         "Game in an unusual place? Set the NSLTVR_GAMEDIR environment variable to its folder and install again.",
         "Install log: %TEMP%\\nsltvr-setup.log"
     ],
-    "url": "https://github.com/technewsguy/NSLT-VR/releases/download/v1.1.0/NSLT-VR-v1.1.0.zip",
-    "hash": "89e331a6019763107817fbca7e4f335ea67036329ead56d88ea380a6721b744d",
-    "extract_dir": "NSLT-VR-v1.1.0",
+    "url": "https://github.com/technewsguy/NSLT-VR/releases/download/v1.1.1/NSLT-VR-v1.1.1.zip",
+    "hash": "c4b5706b211f89a3854a7791e701580da61d704fe3717ce67a29e8f3dbe66673",
+    "extract_dir": "NSLT-VR-v1.1.1",
     "installer": {
         "script": [
             "$a = @('/S')",
