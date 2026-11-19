@@ -1,5 +1,5 @@
 {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "VR mod for Smash Hit: plays the Gear VR build in a PC VR headset (OpenXR / SteamVR) or flat. Bring your own APK.",
     "homepage": "https://github.com/technewsguy/SmashHit-VR",
     "license": "MIT",
@@ -10,8 +10,8 @@
         "Then run 'Smash Hit VR - Add to Steam' from the Start menu to add 'Smash Hit VR' to Steam and SteamVR, with artwork made from your APK (closes and restarts Steam).",
         "Or start 'Smash Hit VR' from the Start menu (start your VR software first to play in the headset)."
     ],
-    "url": "https://github.com/technewsguy/SmashHit-VR/releases/download/v0.3.0/SmashHit-VR-v0.3.0-windows-x64.zip",
-    "hash": "7e6ce66bf84a6754bebc17c14a3c5a476ca00c3385dcab98100309a885886347",
+    "url": "https://github.com/technewsguy/SmashHit-VR/releases/download/v0.4.0/SmashHit-VR-v0.4.0-windows-x64.zip",
+    "hash": "daa8baf4fc266e424e4e791bd5fd4286b5ef03fdbf32229f1d96bcda3cdc0cca",
     "extract_dir": "SmashHit-VR",
     "pre_install": [
         "# Bring back the APK from earlier installs (kept in the persist folder), or from the old 'shattervr' package.",
